@@ -1,0 +1,47 @@
+/* Mobile tap highlight */
+/* https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-tap-highlight-color */
+html {
+	-webkit-tap-highlight-color: rgba(128, 128, 128, 0.5);
+}
+
+@supports (scrollbar-color: auto) {
+  html {
+    scrollbar-color: var(--color-background-110) var(--color-background-100);
+  }
+}
+
+@supports selector(::-webkit-scrollbar) {
+  ::-webkit-scrollbar {
+    background: var(--color-background-110);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-background-100);
+  }
+  ::-webkit-scrollbar {
+    width: 0.7rem;
+    height: 0.5rem;
+  }
+}
+
+:root {
+	font-size: 16px;
+	line-height: 24px;
+
+	color: var(--color-content);
+	background-color: var(--color-background-100);
+
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-text-size-adjust: 100%;
+
+	--color-background-110: #181818;
+	--color-background-100: #202020;
+	--color-background-90: #282828;
+	--color-background-80: #292929;
+	--color-background-70: #2d2d2d;
+	--color-background-hover: #2d2d2d;
+	--color-background-front: #2f2f2f;
+	--color-content: #e0e0e0;
+}

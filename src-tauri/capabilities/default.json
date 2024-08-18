@@ -1,0 +1,34 @@
+{
+	"$schema": "../gen/schemas/desktop-schema.json",
+	"identifier": "default",
+	"description": "Capability for the main window",
+	"windows": ["main"],
+	"permissions": [
+		"core:window:default",
+		"core:window:allow-toggle-maximize",
+		"core:window:allow-minimize",
+		"core:window:allow-unminimize",
+		"core:window:allow-maximize",
+		"core:window:allow-unmaximize",
+		"core:window:allow-is-maximized",
+		"core:window:allow-start-dragging",
+		"core:window:allow-close",
+		"core:window:allow-show",
+		"core:window:allow-hide",
+		"shell:allow-open",
+		{
+			"identifier": "shell:allow-execute",
+			"allow": [
+				{
+					"cmd": "",
+					"name": "binaries/ffmpeg",
+					"sidecar": true
+				}
+			]
+		},
+		"dialog:default",
+		"fs:default",
+		"core:event:default",
+		"core:path:default"
+	]
+}
