@@ -46,7 +46,7 @@
     class="flex flex-col justify-center items-center gap-1 transition-all duration-300 ease w-96 h-64 bg-#141414 border-1 border-#303030 border-dashed rounded-xl data-[dragging=true]:bg-background data-[dragging=true]:border-1 data-[dragging=true]:border-#606060"
   >
     {#if dropzone.files.length === 0}
-      <Uploade class="w-10 h-10" />
+      <Uploade class="w-8 h-8" />
       <p>Drag and drop your file to compress</p>
     {:else}
       <p>Dropped files:</p>

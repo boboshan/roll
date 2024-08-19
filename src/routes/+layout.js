@@ -4,6 +4,12 @@
 export const prerender = true;
 export const ssr = false;
 
-import 'virtual:uno.css'
-import '../lib/styles/global.css'
-import '@unocss/reset/tailwind-compat.css';
+import "virtual:uno.css";
+import "../lib/styles/global.css";
+import "@unocss/reset/tailwind-compat.css";
+
+export function load({ url }) {
+	return {
+		url: url.pathname,
+	};
+}

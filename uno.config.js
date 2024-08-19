@@ -27,7 +27,8 @@ export default defineConfig({
 				70: "var(--color-background-70)",
 			},
 			content: {
-				DEFAULT: "var(--color-content)",
+				DEFAULT: "var(--color-content-100)",
+				90: "var(--color-content-90)",
 			},
 		},
 	},
@@ -42,8 +43,7 @@ export default defineConfig({
 		presetTypography(),
 		presetWebFonts({
 			provider: "google",
-			fonts: {
-			},
+			fonts: {},
 		}),
 	],
 	transformers: [transformerDirectives(), transformerVariantGroup()],
