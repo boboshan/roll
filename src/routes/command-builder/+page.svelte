@@ -166,7 +166,7 @@
   });
 </script>
 
-<div class="max-w-3xl mx-a py-4">
+<div class="max-w-3xl my-4 mx-a py-4 ">
   <textarea
     bind:value={ffmpegCommandPreview}
     oninput={updateFFmpegCommandFromPreview}

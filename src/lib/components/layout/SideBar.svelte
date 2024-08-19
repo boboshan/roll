@@ -1,9 +1,8 @@
 <script>
-	import { slide } from "svelte/transition";
 	import { navLinks } from "$lib/config";
-	// import Menu from "$lib/icons/Menu.svelte";
 	import Setting from "$lib/icons/Setting.svelte";
 	import Logo from "$lib/icons/Logo.svelte";
+	// import Menu from "$lib/icons/Menu.svelte";
 
 	let { url } = $props();
 	let sidebar = $state({
@@ -50,6 +49,29 @@
 			left: `${rect.right + window.scrollX + 10}px`,
 		};
 	}
+
+	function typewriter(node, { speed = 1 }) {
+		const valid =
+			node.childNodes.length === 1 &&
+			node.childNodes[0].nodeType === Node.TEXT_NODE;
+
+		if (!valid) {
+			throw new Error(
+				`This transition only works on elements with a single text node child`
+			);
+		}
+
+		const text = node.textContent;
+		const duration = text.length / (speed * 0.01);
+
+		return {
+			duration,
+			tick: (t) => {
+				const i = ~~(text.length * t);
+				node.textContent = text.slice(0, i);
+			},
+		};
+	}
 </script>
 
 <svelte:window bind:innerWidth onresize={handleResize} />
@@ -70,9 +92,12 @@
 		{#if sidebar.open}
 			<span
 				class="text-sm font-bold vertical-top leading-6"
-				transition:slide={{ duration: 300 }}
-				>Roll
+				in:typewriter={{ speed: 0.8 }}
+				out:typewriter={{ speed: 1.5 }}
+			>
+				Roll
 			</span>
+			<span class="text-sm blink">_</span>
 		{/if}
 	</div>
 	<nav class="flex flex-col gap-1">
@@ -113,11 +138,9 @@
 					>
 						<Icon width="18px" height="18px" />
 					</span>
-					{#if sidebar.open}
-						<span class="text-sm leading-6" transition:slide={{ duration: 300 }}
-							>{label}
-						</span>
-					{/if}
+					<span class="text-sm leading-6">
+						{label}
+					</span>
 				</div>
 			</a>
 		{/each}
@@ -158,6 +181,10 @@
 	.indicator-from-bottom[data-current="true"]::before {
 		animation: indicator-from-bottom 100ms ease-in-out forwards;
 		animation-delay: 100ms;
+	}
+
+	.blink {
+		animation: blink 1s step-end infinite;
 	}
 
 	@keyframes indicator-from-top {
@@ -209,6 +236,16 @@
 			height: 0;
 			bottom: 0;
 			transform: translateY(0%);
+		}
+	}
+
+	@keyframes blink {
+		from,
+		to {
+			color: transparent;
+		}
+		50% {
+			color: var(--color-content-100);
 		}
 	}
 </style>
