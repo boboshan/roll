@@ -16,18 +16,18 @@
 		"core:window:allow-show",
 		"core:window:allow-hide",
 		"shell:allow-open",
-		{
-			"identifier": "shell:allow-execute",
-			"allow": [
-				{
-					"cmd": "",
-					"name": "binaries/ffmpeg",
-					"sidecar": true
-				}
-			]
-		},
+		"shell:allow-execute",
 		"dialog:default",
 		"fs:default",
+    {
+      "identifier": "fs:allow-exists",
+      "allow": [{ "path": "**" }]
+    },
+		{
+      "identifier": "fs:allow-mkdir",
+      "allow": [{ "path": "**" }]
+    },
+		"fs:allow-mkdir",
 		"core:event:default",
 		"core:path:default"
 	]

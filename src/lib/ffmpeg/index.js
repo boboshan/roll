@@ -1,2 +1,2 @@
 export { ffmpegOptions } from "./ffmpegOptions.js";
-export { createFFmpegCommand } from "./ffmpeg.svelte";
+export { createFFmpegCommand, ffmpegCommand } from "./ffmpeg.svelte";

@@ -1,10 +1,10 @@
 <script>
-  import stringArgv from "string-argv";
+  // import stringArgv from "string-argv";
   import { invoke } from "@tauri-apps/api/core";
   import { listen } from "@tauri-apps/api/event";
   import { dirname, extname, basename } from "@tauri-apps/api/path";
   import { open } from "@tauri-apps/plugin-dialog";
-  import { createFFmpegCommand, ffmpegOptions } from "$lib/ffmpeg/";
+  import { ffmpegCommand, ffmpegOptions } from "$lib/ffmpeg/";
 
   let progressUnlisten = null;
   let errorUnlisten = null;
@@ -23,7 +23,6 @@
     speed: 0,
   });
 
-  let ffmpegCommand = createFFmpegCommand();
   let ffmpegCommandPreview = $state(ffmpegCommand.toString());
 
   function updateFFmpegCommandPreview() {
@@ -166,7 +165,7 @@
   });
 </script>
 
-<div class="max-w-3xl my-4 mx-a py-4 ">
+<div class="max-w-3xl my-4 mx-a py-4 overflow-auto">
   <textarea
     bind:value={ffmpegCommandPreview}
     oninput={updateFFmpegCommandFromPreview}
@@ -308,13 +307,14 @@
       </div>
     {/each}
     <div class="flex flex-row gap-3">
-      <button type="button" onclick={ffmpegCommand.addArg} class="btn"
-        >Add Argument
+      <button type="button" onclick={ffmpegCommand.addArg} class="btn">
+        Add Argument
       </button>
       <button
         type="submit"
-        class="ml-a rounded-2 px-5 py-3 text-sm whitespace-nowrap transition-border-color duration-200 cursor-pointer bg-#f3f3f3 text-#141414 font-500 hover:(bg-background-70 text-#f3f3f3)"
-        >Run
+        class="ml-a rounded-2 px-5 py-3 text-sm whitespace-nowrap transition-border-color duration-200 cursor-pointer bg-#f3f3f3 text-#141414 font-500 hover:bg-content"
+      >
+        Run
       </button>
     </div>
 

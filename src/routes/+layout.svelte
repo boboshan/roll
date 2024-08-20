@@ -15,7 +15,7 @@
 		<div class="w-full h-[calc(100%-1.5rem)] bg-#181818 rounded-tl-lg overflow-hidden">
 			{#key data.url}
 			<div
-				class="w-full h-full overflow-auto"
+				class="w-full h-full"
 				in:blur={{ delay: 200, duration: 200 }}
 				out:blur={{ duration: 200 }}
 			>
