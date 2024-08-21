@@ -152,7 +152,7 @@
   });
 </script>
 
-<div class="max-w-3xl my-4 mx-a py-4 overflow-auto">
+<div class="max-w-3xl h-full my-4 mx-a p-4 overflow-auto">
   <textarea
     bind:value={ffmpegCommandPreview}
     oninput={updateFFmpegCommandFromPreview}
@@ -299,7 +299,7 @@
       </button>
       <button
         type="submit"
-        class="ml-a rounded-2 px-5 py-3 text-sm whitespace-nowrap transition-border-color duration-200 cursor-pointer bg-#f3f3f3 text-#141414 font-500 hover:bg-content"
+        class="ml-a rounded-2 px-5 py-3 text-sm whitespace-nowrap select-none transition-border-color duration-200 cursor-pointer bg-#f3f3f3 text-#141414 font-500 hover:bg-content"
       >
         Run
       </button>
