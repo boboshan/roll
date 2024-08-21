@@ -229,21 +229,28 @@
 	<div
 		in:blur={{ duration: 300, delay: 300 }}
 		out:blur={{ duration: 300 }}
-		class="relative flex flex-col items-center justify-center h-full overflow-hidden"
+		class="relative w-full h-full overflow-hidden"
 	>
 		{#if isComplete}
-			<h2
+			<div
 				in:blur={{ duration: 300, delay: 300 }}
 				out:blur={{ duration: 300 }}
-				class="text-6xl font-bold uppercase select-none"
+				class="flex w-full h-full items-center justify-center"
 			>
-				Complete
-			</h2>
+				<button
+					onclick={reset}
+					class="text-6xl font-bold uppercase select-none bg-inherit hover:scale-110 active:scale-120 transition-transform duration-200 ease-in-out"
+					>Complete</button
+				>
+			</div>
 		{:else}
-			<div out:blur={{ duration: 300 }}>
+			<div
+				class="flex w-full h-full items-center justify-center"
+				out:blur={{ duration: 300 }}
+			>
 				<button
 					onclick={compress}
-					class="rounded-2 px-5 py-3 text-sm whitespace-nowrap select-none transition-border-color duration-200 cursor-pointer bg-#f3f3f3 text-#141414 font-500 hover:bg-content"
+					class="rounded-2 px-5 py-3 mr-2 text-sm whitespace-nowrap select-none transition-border-color duration-200 cursor-pointer bg-#f3f3f3 text-#141414 font-500 hover:bg-content"
 				>
 					Compress
 				</button>
@@ -358,7 +365,7 @@
 			role="region"
 			aria-label="File drop zone"
 			data-dragging={dropzone.isDragging}
-			class="flex flex-col justify-center items-center gap-5 transition-all duration-300 ease w-96 h-64 bg-#141414 border-1 border-#303030 border-dashed rounded-xl data-[dragging=true]:bg-background data-[dragging=true]:border-1 data-[dragging=true]:border-#606060"
+			class="flex flex-col justify-center items-center gap-4 transition-all duration-300 ease w-96 h-64 bg-#141414 border-1 border-#303030 border-dashed rounded-xl data-[dragging=true]:bg-background data-[dragging=true]:border-1 data-[dragging=true]:border-#606060"
 		>
 			<Uploade class="w-8 h-8" />
 			<div class="text-center leading-8 mb-2">

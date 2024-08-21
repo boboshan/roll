@@ -14,7 +14,7 @@ export default defineConfig({
 		{
 			"sidebar-open": "w-240px px-2 lg:w-240px",
 			"sidebar-close": "w-48px px-2 lg:w-48px",
-			btn: "rounded-2 px-4 py-3 text-sm whitespace-nowrap select-none transition-border-color duration-200 cursor-pointer bg-#222222 font-500 hover:bg-background-70 active:bg-background-70",
+			btn: "rounded-2 px-5 py-3 text-sm whitespace-nowrap select-none transition-border-color duration-200 cursor-pointer bg-#222222 font-500 hover:bg-background-70 active:bg-background-70",
 		},
 	],
 	rules: [],
