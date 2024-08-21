@@ -6,10 +6,6 @@
   import { open } from "@tauri-apps/plugin-dialog";
   import { ffmpegCommand, ffmpegOptions } from "$lib/ffmpeg/";
 
-  let progressUnlisten = null;
-  let errorUnlisten = null;
-  let infoUnlisten = null;
-
   let output = $state("");
   let error = $state("");
 
@@ -127,7 +123,7 @@
   }
 
   $effect(async () => {
-    progressUnlisten = await listen("ffmpeg-progress", (event) => {
+    const unlistenProgressInto = await listen("ffmpeg-progress", (event) => {
       const info = event.payload;
       progressInfo.progress = info.progress;
       progressInfo.frame = info.frame;
@@ -138,29 +134,20 @@
       progressInfo.speed = info.speed;
     });
 
-    errorUnlisten = await listen("ffmpeg-error", (event) => {
+    const unlistenError = await listen("ffmpeg-error", (event) => {
       console.error("FFmpeg error:", event.payload);
       error = event.payload;
     });
 
-    infoUnlisten = await listen("ffmpeg-info", (event) => {
+    const unlistenInfo = await listen("ffmpeg-info", (event) => {
       console.log("FFmpeg info:", event.payload);
       output += event.payload + "\n";
     });
 
     return () => {
-      if (progressUnlisten) {
-        progressUnlisten();
-        progressUnlisten = null;
-      }
-      if (errorUnlisten) {
-        errorUnlisten();
-        errorUnlisten = null;
-      }
-      if (infoUnlisten) {
-        infoUnlisten();
-        infoUnlisten = null;
-      }
+      unlistenProgressInto();
+      unlistenError();
+      unlistenInfo();
     };
   });
 </script>

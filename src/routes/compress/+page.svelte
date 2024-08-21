@@ -1,42 +1,44 @@
 <script>
-  import { open } from "@tauri-apps/plugin-dialog";
+  import { blur, fade } from "svelte/transition";
   import { invoke } from "@tauri-apps/api/core";
-  import { mkdir, exists } from "@tauri-apps/plugin-fs";
+  import { listen } from "@tauri-apps/api/event";
   import { event } from "@tauri-apps/api";
   import { dirname, extname, join, basename } from "@tauri-apps/api/path";
+  import { open } from "@tauri-apps/plugin-dialog";
+  import { mkdir, exists } from "@tauri-apps/plugin-fs";
+  import { AlertDialog, Checkbox, Label } from "bits-ui";
+  import { flyAndScale } from "$lib/transitions";
   import Uploade from "$lib/icons/Uploade.svelte";
-  import { blur } from "svelte/transition";
+
+  let output = $state("");
+  let error = $state("");
+
+  let progressInfo = $state({
+    progress: 0,
+    frame: 0,
+    fps: 0,
+    totalSize: 0,
+    outTime: 0,
+    bitrate: 0,
+    speed: 0,
+  });
+
+  let global = $state({
+    processInfo: [],
+    count: 0,
+  });
+
+  let dialog = $state({
+    open: false,
+    message: "",
+    applyForRest: false,
+    resolve: null,
+  });
 
   let dropzone = $state({
     files: [],
     isDragging: false,
   });
-
-  // let dragCounter = 0;
-
-  // function handleDragEnter(e) {
-  //   e.preventDefault();
-  //   dragCounter++;
-  //   dropzone.isDragging = true;
-  // }
-
-  // function handleDragLeave(e) {
-  //   e.preventDefault();
-  //   dragCounter--;
-  //   if (dragCounter === 0) {
-  //     dropzone.isDragging = false;
-  //   }
-  // }
-
-  // function handleDragOver(e) {
-  //   e.preventDefault();
-  // }
-
-  // function handleDrop(e) {
-  //   e.preventDefault();
-  //   dropzone.isDragging = false;
-  //   dragCounter = 0;
-  // }
 
   async function selectInputFile() {
     const selected = await open({
@@ -54,27 +56,101 @@
     }
   }
 
-  async function compress() {
-    for (const path of dropzone.files) {
-      const input = path;
-      const inputFolder = await dirname(path);
-      const inputExtension = await extname(path);
-      const inputFileName = await basename(path);
-      const outputFolder = await join(inputFolder, "_output");
-      const outputExtension = "mp4";
+  function reset() {
+    dropzone.files = [];
+    progressInfo = {
+      progress: 0,
+      frame: 0,
+      fps: 0,
+      totalSize: 0,
+      outTime: 0,
+      bitrate: 0,
+      speed: 0,
+    };
+    global = {
+      processInfo: [],
+      count: 0,
+    };
+  }
 
-      const output = await join(
+  function getUserChoice(fileName) {
+    return new Promise((resolve) => {
+      dialog.open = true;
+      dialog.message = `File "${fileName}" already exists. Overwrite?`;
+      dialog.applyForRest = false;
+      dialog.resolve = resolve;
+    });
+  }
+
+  async function getProcessInfo(filePaths) {
+    let folderExists = false;
+    let processInfo = [];
+    let globalOverwrite = null;
+
+    for (const inputPath of filePaths) {
+      const inputFolder = await dirname(inputPath);
+      const inputExtension = await extname(inputPath);
+      const inputFileName = await basename(inputPath);
+      const outputFolder = await join(inputFolder, "_output");
+      const outputfileName = inputFileName;
+      const outputExtension = "mp4";
+      const outputPath = await join(
         outputFolder,
-        inputFileName.replace(inputExtension, outputExtension)
+        outputfileName.replace(inputExtension, outputExtension)
       );
 
-      const folderExists = await exists(outputFolder);
-
       if (!folderExists) {
-        await mkdir(outputFolder);
+        folderExists = await exists(outputFolder);
+
+        if (!folderExists) {
+          await mkdir(outputFolder);
+        }
       }
 
-      const args = ["-i", input, "-crf", "26", "-preset", "slow", output];
+      const fileExists = await exists(outputPath);
+
+      if (fileExists) {
+        if (globalOverwrite === null) {
+          const { overwrite, applyForRest } =
+            await getUserChoice(inputFileName);
+          if (applyForRest) {
+            globalOverwrite = overwrite;
+          }
+          if (!overwrite) continue;
+        }
+        if (globalOverwrite === false) {
+          continue;
+        }
+      }
+
+      processInfo.push({
+        inputPath,
+        outputPath,
+        fileExists,
+      });
+    }
+    return processInfo;
+  }
+
+  async function compress() {
+    global.processInfo = await getProcessInfo(dropzone.files);
+
+    for (const info of global.processInfo) {
+      const args = [
+        "-i",
+        info.inputPath,
+        "-crf",
+        "26",
+        "-preset",
+        "slow",
+        "-progress",
+        "pipe:1",
+        info.outputPath,
+      ];
+
+      if (info.fileExists) {
+        args.push("-y");
+      }
 
       try {
         await invoke("run_ffmpeg_with_progress", { args });
@@ -82,6 +158,7 @@
         console.error("FFmpeg error:", err);
         error = err.toString();
       }
+      global.count++;
     }
   }
 
@@ -97,10 +174,34 @@
       dropzone.isDragging = false;
     });
 
+    const unlistenProgressInto = await listen("ffmpeg-progress", (event) => {
+      const info = event.payload;
+      progressInfo.progress = info.progress;
+      progressInfo.frame = info.frame;
+      progressInfo.fps = info.fps;
+      progressInfo.totalSize = info.total_size;
+      progressInfo.outTime = info.out_time;
+      progressInfo.bitrate = info.bitrate;
+      progressInfo.speed = info.speed;
+    });
+
+    const unlistenError = await listen("ffmpeg-error", (event) => {
+      console.error("FFmpeg error:", event.payload);
+      error = event.payload;
+    });
+
+    const unlistenInfo = await listen("ffmpeg-info", (event) => {
+      console.log("FFmpeg info:", event.payload);
+      output += event.payload + "\n";
+    });
+
     return () => {
       unlistenDragEnter;
       unlistenDragLeave;
       unlistenDragDrop;
+      unlistenProgressInto;
+      unlistenError;
+      unlistenInfo;
     };
   });
 </script>
@@ -109,29 +210,120 @@
   <div
     in:blur={{ duration: 300, delay: 300 }}
     out:blur={{ duration: 300 }}
-    class="flex flex-col items-center justify-center h-full overflow-hidden"
+    class="relative flex flex-col items-center justify-center h-full overflow-hidden"
   >
     <div>
       <button
         onclick={compress}
         class="rounded-2 px-5 py-3 text-sm whitespace-nowrap transition-border-color duration-200 cursor-pointer bg-#f3f3f3 text-#141414 font-500 hover:bg-content"
-        >Compress
+      >
+        Compress
       </button>
       <button
-        onclick={() => {
-          dropzone.files = [];
-        }}
+        onclick={reset}
         class="rounded-2 px-5 py-3 text-sm whitespace-nowrap transition-border-color duration-200 cursor-pointer bg-#f3f3f3 text-#141414 font-500 hover:bg-content"
       >
-        Re-select
+        Reset
       </button>
+      <AlertDialog.Root bind:open={dialog.open}>
+        <AlertDialog.Portal>
+          <AlertDialog.Overlay
+            transition={fade}
+            transitionConfig={{ duration: 150 }}
+            class="fixed inset-0 z-50 bg-black/80"
+          />
+          <AlertDialog.Content
+            transition={flyAndScale}
+            class="fixed left-50% top-50% z-50 grid w-full max-w-94% translate-x--50% translate-y--50% gap-3 rounded-2xl border-1 border-#303030 bg-#141414 p-7 outline-none sm:max-w-lg"
+          >
+            <div class="flex flex-col gap-3 pb-6">
+              <AlertDialog.Title class="text-lg font-bold"
+                >Replace or Skip Files
+              </AlertDialog.Title>
+              <AlertDialog.Description
+                class="text-sm text-content-90 opacity-70"
+              >
+                {dialog.message}
+              </AlertDialog.Description>
+            </div>
+            <div class="flex flex-row justify-start items-center gap-2">
+              <Checkbox.Root
+                id="applyForRest"
+                aria-labelledby="applyForRest-label"
+                bind:checked={dialog.applyForRest}
+                class="peer flex w-4 h-4 items-center justify-center rounded border-1 border-#303030 transition-all duration-150 ease-in-out active:scale-98 data-[state=unchecked]:border-border-input data-[state=unchecked]:bg-background data-[state=unchecked]:hover:border-#606060"
+              >
+                <Checkbox.Indicator
+                  let:isChecked
+                  class="inline-flex items-center justify-center text-background"
+                >
+                  {#if isChecked}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="15px"
+                      height="15px"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1.5"
+                        d="m5 13l4 4L19 7"
+                      />
+                    </svg>
+                  {/if}
+                </Checkbox.Indicator>
+              </Checkbox.Root>
+              <Label.Root
+                id="applyForRest-label"
+                for="applyForRest"
+                class="text-sm vertical-top"
+              >
+                Apply for remaining files
+              </Label.Root>
+            </div>
+            <div class="flex w-full items-center justify-center gap-2">
+              <AlertDialog.Cancel
+                onclick={() => {
+                  dialog.resolve({
+                    overwrite: false,
+                    applyForRest: dialog.applyForRest,
+                  });
+                }}
+                class="btn w-full"
+              >
+                Skip
+              </AlertDialog.Cancel>
+              <AlertDialog.Action
+                onclick={() => {
+                  dialog.resolve({
+                    overwrite: true,
+                    applyForRest: dialog.applyForRest,
+                  });
+                }}
+                class="w-full rounded-2 px-5 py-3 text-sm whitespace-nowrap transition-border-color duration-200 cursor-pointer bg-#f3f3f3 text-#141414 font-500 hover:bg-content"
+              >
+                Overwrite
+              </AlertDialog.Action>
+            </div>
+          </AlertDialog.Content>
+        </AlertDialog.Portal>
+      </AlertDialog.Root>
+    </div>
+    <div class="absolute bottom-0 bg-inherit h-1 w-full overflow-hidden">
+      <div
+        class="bg-[orangered] h-full w-full transition-transform duration-100 ease-in"
+        style="transform: translateX({progressInfo.progress * 100 - 100}%);"
+      ></div>
     </div>
   </div>
 {:else}
   <div
     in:blur={{ duration: 300, delay: 300 }}
     out:blur={{ duration: 300 }}
-    class="flex flex-col items-center justify-center h-full overflow-hidden"
+    class="relative flex flex-col items-center justify-center h-full overflow-hidden"
   >
     <div
       role="region"
@@ -149,8 +341,8 @@
       <button
         onclick={selectInputFile}
         class="rounded-2 px-5 py-3 text-sm whitespace-nowrap transition-border-color duration-200 cursor-pointer bg-#f3f3f3 text-#141414 font-500 hover:bg-content"
-        >Select File</button
-      >
+        >Select
+      </button>
     </div>
   </div>
 {/if}

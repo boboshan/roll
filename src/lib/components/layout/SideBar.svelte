@@ -78,7 +78,7 @@
 
 <aside
 	data-tauri-drag-region
-	class="shrink-0 flex flex-col justify-between gap-1 h-full pb-1 px-1 select-none transition-all duration-300 ease-in-out"
+	class="relative shrink-0 flex flex-col justify-between gap-1 h-full pb-1 px-1 select-none transition-all duration-300 ease-in-out"
 	class:sidebar-open={sidebar.open}
 	class:sidebar-close={!sidebar.open}
 >
