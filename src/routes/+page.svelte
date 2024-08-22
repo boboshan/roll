@@ -6,8 +6,8 @@
     innerWidth: 0,
     innerHeight: 0,
   });
-  let logoWidth = 0;
-  let logoHeight = 0;
+  let logoWidth = $derived(logoElement?.clientWidth);
+  let logoHeight = $derived(logoElement?.clientHeight);
   let logoX = 0;
   let logoY = 0;
   let velocityX = 3;
@@ -28,12 +28,26 @@
     logoY += velocityY;
 
     // Check for collisions with window boundaries
-    if (logoX <= 0 || logoX + logoWidth >= windowSize.innerWidth) {
+    if (
+      logoX <= 0 ||
+      logoX + logoWidth * currentScale >= windowSize.innerWidth
+    ) {
       velocityX = -velocityX;
+      logoX = Math.max(
+        0,
+        Math.min(logoX, windowSize.innerWidth - logoWidth * currentScale)
+      );
       targetRotation += Math.random() > 0.5 ? 45 : -45; // Random rotation direction
     }
-    if (logoY <= 0 || logoY + logoHeight >= windowSize.innerHeight) {
+    if (
+      logoY <= 0 ||
+      logoY + logoHeight * currentScale >= windowSize.innerHeight
+    ) {
       velocityY = -velocityY;
+      logoY = Math.max(
+        0,
+        Math.min(logoY, windowSize.innerHeight - logoHeight * currentScale)
+      );
       targetRotation += Math.random() > 0.5 ? 45 : -45; // Random rotation direction
     }
 
@@ -48,6 +62,10 @@
       }
     }
     currentScale += scaleStep * scaleDirection;
+    currentScale = Math.max(
+      scaleRange[0],
+      Math.min(scaleRange[1], currentScale)
+    );
 
     logoElement.style.transform = `translate(${logoX}px, ${logoY}px) scale(${currentScale}) rotate(${rotation}deg)`;
 
@@ -63,8 +81,6 @@
 
   $effect(() => {
     if (logoElement) {
-      logoWidth = logoElement.clientWidth;
-      logoHeight = logoElement.clientHeight;
       logoX = Math.random() * (windowSize.innerWidth - logoWidth);
       logoY = Math.random() * (windowSize.innerHeight - logoHeight);
       animate();
