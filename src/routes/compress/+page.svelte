@@ -5,8 +5,9 @@
   import { event } from "@tauri-apps/api";
   import { dirname, extname, join, basename } from "@tauri-apps/api/path";
   import { open } from "@tauri-apps/plugin-dialog";
-  import { mkdir, exists } from "@tauri-apps/plugin-fs";
+  import { mkdir, exists, stat, readDir } from "@tauri-apps/plugin-fs";
   import { AlertDialog, Checkbox, Label } from "bits-ui";
+  import { Confetti } from "svelte-confetti";
   import { flyAndScale } from "$lib/transitions";
   import UploadIcon from "$lib/icons/Uploade.svelte";
 
@@ -51,7 +52,7 @@
   });
 
   let fileSelection = $state({
-    selectedFiles: [],
+    selected: [],
     isDragging: false,
   });
 
@@ -67,12 +68,12 @@
       ],
     });
     if (selectedFiles) {
-      fileSelection.selectedFiles = selectedFiles.map((f) => f.path);
+      fileSelection.selected = selectedFiles.map((f) => f.path);
     }
   }
 
   function resetCompression() {
-    fileSelection.selectedFiles = [];
+    fileSelection.selected = [];
     ffmpegProgress = {
       percent: 0,
       frame: 0,
@@ -99,13 +100,36 @@
     });
   }
 
-  async function prepareFiles(filePaths) {
+  async function getFileInfo(path) {
+    return await stat(path);
+  }
+
+  async function prepareFiles(paths, { maxDepth = 4, currentDepth = 0 } = {}) {
     let outputFolderExists = false;
     let filesToProcess = [];
     let globalOverwriteDecision = null;
 
-    for (let i = 0; i < filePaths.length; i++) {
-      const inputPath = filePaths[i];
+    for (let i = 0; i < paths.length; i++) {
+      const path = paths[i];
+      const fileInfo = await getFileInfo(path);
+
+      if (fileInfo.isDirectory === true && currentDepth < maxDepth) {
+        const entries = await readDir(path);
+        const promises = entries.map((entry) => join(path, entry.name));
+        const subPaths = await Promise.all(promises);
+        const subFiles = await prepareFiles(subPaths, {
+          maxDepth,
+          currentDepth: currentDepth + 1,
+        });
+        filesToProcess = filesToProcess.concat(subFiles);
+        continue;
+      }
+
+      if (fileInfo.isDirectory) {
+        continue; // Skip directories at max depth
+      }
+
+      const inputPath = path;
       const inputFolder = await dirname(inputPath);
       const inputExtension = await extname(inputPath);
       const inputFileName = await basename(inputPath);
@@ -126,7 +150,7 @@
       }
 
       const fileExists = await exists(outputPath);
-      const isLastFile = i === filePaths.length - 1;
+      const isLastFile = i === paths.length - 1 && currentDepth === 0;
 
       if (fileExists) {
         if (globalOverwriteDecision === null) {
@@ -154,7 +178,7 @@
   }
 
   async function startCompression() {
-    const filesToProcess = await prepareFiles(fileSelection.selectedFiles);
+    const filesToProcess = await prepareFiles(fileSelection.selected);
     fileStats.total = filesToProcess.length;
 
     for (const file of filesToProcess) {
@@ -193,7 +217,7 @@
       fileSelection.isDragging = false;
     });
     const unListenDragDrop = await event.listen("tauri://drag-drop", (e) => {
-      fileSelection.selectedFiles = e.payload.paths;
+      fileSelection.selected = e.payload.paths;
       fileSelection.isDragging = false;
     });
 
@@ -229,7 +253,7 @@
   });
 </script>
 
-{#if fileSelection.selectedFiles.length > 0}
+{#if fileSelection.selected.length > 0}
   <div
     in:blur={{ duration: 300, delay: 300 }}
     out:blur={{ duration: 300 }}
@@ -242,10 +266,13 @@
         class="flex w-full h-full items-center justify-center"
       >
         <button
-          on:click={resetCompression}
+          onclick={resetCompression}
           class="text-6xl font-bold uppercase select-none bg-inherit hover:scale-110 active:scale-120 transition-transform duration-200 ease-in-out"
           >Complete</button
         >
+      </div>
+      <div class="absolute top-50% left-50%">
+        <Confetti y={[-1, 1]} x={[-3, 3]} delay={[400, 500]} duration="1000" />
       </div>
     {:else}
       <div
@@ -253,13 +280,13 @@
         out:blur={{ duration: 300 }}
       >
         <button
-          on:click={startCompression}
+          onclick={startCompression}
           class="rounded-2 px-5 py-3 mr-2 text-sm whitespace-nowrap select-none transition-border-color duration-200 cursor-pointer bg-#f3f3f3 text-#141414 font-500 hover:bg-content"
         >
           Compress
         </button>
         <button
-          on:click={resetCompression}
+          onclick={resetCompression}
           class="rounded-2 px-5 py-3 text-sm whitespace-nowrap select-none transition-border-color duration-200 cursor-pointer bg-#f3f3f3 text-#141414 font-500 hover:bg-content"
         >
           Reset
@@ -327,7 +354,7 @@
           {/if}
           <div class="flex w-full items-center justify-center gap-2">
             <AlertDialog.Cancel
-              on:click={() => {
+              onclick={() => {
                 overwriteDialog.resolve({
                   overwrite: false,
                   applyToAll: overwriteDialog.applyToAll,
@@ -338,7 +365,7 @@
               Skip
             </AlertDialog.Cancel>
             <AlertDialog.Action
-              on:click={() => {
+              onclick={() => {
                 overwriteDialog.resolve({
                   overwrite: true,
                   applyToAll: overwriteDialog.applyToAll,
@@ -379,7 +406,7 @@
         </p>
       </div>
       <button
-        on:click={openFileSelector}
+        onclick={openFileSelector}
         class="rounded-2 px-5 py-3 text-sm whitespace-nowrap select-none transition-border-color duration-200 cursor-pointer bg-#f3f3f3 text-#141414 font-500 hover:bg-content"
         >Select
       </button>
