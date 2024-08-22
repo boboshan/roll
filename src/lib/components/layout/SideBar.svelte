@@ -1,8 +1,8 @@
 <script>
 	import { navLinks } from "$lib/config";
-	import Setting from "$lib/icons/Setting.svelte";
+	import SettingIcon from "$lib/icons/Setting.svelte";
 	import Logo from "$lib/icons/Logo.svelte";
-	// import Menu from "$lib/icons/Menu.svelte";
+	// import MenuIcon from "$lib/icons/Menu.svelte";
 
 	let { url } = $props();
 	let sidebar = $state({
@@ -105,7 +105,7 @@
 			class="group flex justify-center items-center w-10 h-9 px-1 py-1.5 rounded-md bg-inherit hover:bg-background-70 active:bg-background-80 transition-colors transition-transform duration-100 text-center"
 			onclick={toggleMenu}
 		>
-			<Menu
+			<MenuIcon
 				width="18px"
 				height="18px"
 				class="group-active:scale-x-40 transition-transform duration-100 ease-in-out"
@@ -148,7 +148,7 @@
 	<button
 		class="mt-a flex justify-center items-center vertical-top w-10 h-9 px-1 py-1.5 rounded-md bg-inherit hover:bg-background-70 active:(bg-background-80 text-content-90) transition-colors transition-transform duration-100 text-center"
 	>
-		<Setting width="18px" height="18px" />
+		<SettingIcon width="18px" height="18px" />
 	</button>
 </aside>
 
