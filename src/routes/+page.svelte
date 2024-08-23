@@ -1,24 +1,28 @@
 <script>
   import Logo from "$lib/icons/Logo.svelte";
+  import { emoji } from "$lib/states/emoji.svelte";
 
-  let logoElement = $state();
   let windowSize = $state({
     innerWidth: 0,
     innerHeight: 0,
   });
-  let logoWidth = $derived(logoElement?.clientWidth);
-  let logoHeight = $derived(logoElement?.clientHeight);
+  let logoElement;
   let logoX = 0;
   let logoY = 0;
+  let logoWidth = 0;
+  let logoHeight = 0;
   let velocityX = 3;
   let velocityY = 3;
-  let scaleRange = [1, 1.4];
+  let scaleRange = [1, 2.1];
   let scaleDirection = 1;
-  let scaleStep = 0.005; // Reduced for slower scaling
+  let scaleStep = 0.005;
   let currentScale = 1;
   let rotation = 0;
   let targetRotation = 0;
   let frameCount = 0;
+  let animationId;
+
+  let clickCount = $state(0);
 
   function animate() {
     frameCount++;
@@ -37,7 +41,7 @@
         0,
         Math.min(logoX, windowSize.innerWidth - logoWidth * currentScale)
       );
-      targetRotation += Math.random() > 0.5 ? 45 : -45; // Random rotation direction
+      targetRotation += Math.random() > 0.5 ? 45 : -45;
     }
     if (
       logoY <= 0 ||
@@ -48,7 +52,7 @@
         0,
         Math.min(logoY, windowSize.innerHeight - logoHeight * currentScale)
       );
-      targetRotation += Math.random() > 0.5 ? 45 : -45; // Random rotation direction
+      targetRotation += Math.random() > 0.5 ? 45 : -45;
     }
 
     // Smooth rotation
@@ -56,7 +60,6 @@
 
     // Update logo scale less frequently and smoothly
     if (frameCount % 60 === 0) {
-      // Change scale direction every 60 frames (about 1 second at 60fps)
       if (currentScale <= scaleRange[0] || currentScale >= scaleRange[1]) {
         scaleDirection = -scaleDirection;
       }
@@ -67,24 +70,60 @@
       Math.min(scaleRange[1], currentScale)
     );
 
-    logoElement.style.transform = `translate(${logoX}px, ${logoY}px) scale(${currentScale}) rotate(${rotation}deg)`;
+    if (logoElement) {
+      logoElement.style.transform = `translate(${logoX}px, ${logoY}px) scale(${currentScale}) rotate(${rotation}deg)`;
+    }
 
-    requestAnimationFrame(animate);
+    animationId = requestAnimationFrame(animate);
   }
 
   function handleMouseEnter() {
-    // Reverse direction when mouse enters the logo
     velocityX = -velocityX;
     velocityY = -velocityY;
-    targetRotation += Math.random() > 0.5 ? 90 : -90; // Random larger rotation on mouse enter
+    targetRotation += Math.random() > 0.5 ? 90 : -90;
   }
 
-  $effect(() => {
-    if (logoElement) {
+  function handleClick() {
+    clickCount++;
+    currentScale += 0.2; // Increase size by 20% on each click
+
+    if (currentScale >= 2) {
+      // If size is doubled or more
+      // "Explode" effect
+      currentScale = 1; // Reset scale
+      clickCount = 0; // Reset click count
+      emoji.toggleBurst(); // Toggle between logo and emoji
+      if (emoji.isBurst) {
+        // Change to a random emoji
+        emoji.random();
+      }
+      // Add some "explosion" velocity
+      velocityX = (Math.random() - 0.5) * 10;
+      velocityY = (Math.random() - 0.5) * 10;
+    }
+  }
+
+  function initializeLogo() {
+    if (logoElement && windowSize.innerWidth && windowSize.innerHeight) {
+      logoWidth = logoElement.clientWidth;
+      logoHeight = logoElement.clientHeight;
       logoX = Math.random() * (windowSize.innerWidth - logoWidth);
       logoY = Math.random() * (windowSize.innerHeight - logoHeight);
-      animate();
     }
+  }
+  $effect(() => {
+    if (windowSize.innerWidth && windowSize.innerHeight) {
+      initializeLogo();
+    }
+  });
+
+  $effect(() => {
+    initializeLogo();
+    animationId = requestAnimationFrame(animate);
+
+    return () => {
+      cancelAnimationFrame(animationId);
+    };
   });
 </script>
 
@@ -94,12 +133,16 @@
 />
 
 <div class="w-full h-full relative overflow-hidden">
-  <div
-    role="region"
-    class="absolute w-50% h-50% transition-transform duration-100"
+  <button
     bind:this={logoElement}
     onmouseenter={handleMouseEnter}
+    onclick={handleClick}
+    class="absolute w-50% h-50% bg-inherit transition-transform duration-100"
   >
-    <Logo />
-  </div>
+    {#if emoji.isBurst}
+      <div class="text-20">{emoji.current}</div>
+    {:else}
+      <Logo />
+    {/if}
+  </button>
 </div>

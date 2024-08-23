@@ -1,6 +1,6 @@
 {
 	"productName": "Roll",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"identifier": "com.boboshan",
 	"build": {
 		"beforeDevCommand": "npm run dev",
@@ -40,6 +40,20 @@
 				"installMode": "perMachine",
 				"startMenuFolder": "WowHowBow"
 			}
-		}
+		},
+		"createUpdaterArtifacts": true
+	},
+	"plugins": {
+		"updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEY3ODJFQ0QxOTM2RjkzNDgKUldSSWsyK1QwZXlDOTAwVDgybDNjL2hSeFVjRHdBQ1NKQUdqNHY5ZGtDcC9hd1JTZ2FDRTBYR2cK",
+      "endpoints": [
+        "https://github.com/boboshan/roll/releases/latest/download/latest.json"
+      ],
+			"active": true,
+			"dialog": true,
+			"windows":{
+				"installMode": "basicUi"
+			}
+    }
 	}
 }
