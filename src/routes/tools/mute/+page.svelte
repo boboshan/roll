@@ -49,7 +49,7 @@
 </script>
 
 {#if !video.file}
-	<div class="flex flex-1 flex-col min-h-[50vh] items-center justify-center">
+	<div class="flex flex-1 flex-col items-center justify-center">
 		<div class="max-w-2xl w-full">
 			<FileUpload />
 		</div>
@@ -107,7 +107,7 @@
 					<h3 class="text-base font-bold mb-4">Remove Audio</h3>
 
 					<div
-						class="text-sm text-primary-800 mb-6 p-4 rounded-xl bg-primary-50 dark:text-primary-200 dark:bg-primary-950/50"
+						class="text-sm text-primary-700 mb-6 p-4 rounded-xl bg-primary-500/10 dark:text-primary-300"
 					>
 						<p>
 							This tool removes the audio track from your video without re-encoding the video

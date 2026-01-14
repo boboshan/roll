@@ -133,7 +133,7 @@
 </script>
 
 {#if !video.file}
-	<div class="flex flex-1 flex-col min-h-[50vh] items-center justify-center">
+	<div class="flex flex-1 flex-col items-center justify-center">
 		<div class="max-w-2xl w-full">
 			<FileUpload />
 		</div>
@@ -208,7 +208,7 @@
 										class={[
 											'text-sm font-medium px-4 py-2.5 rounded-lg border-2 transition-all',
 											outputFormat === key
-												? 'border-primary-500 bg-primary-50 dark:bg-primary-950/50 text-primary-700 dark:text-primary-300'
+												? 'border-primary-500 bg-primary-500/10 text-primary-600 dark:text-primary-400'
 												: 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600 text-muted'
 										]}
 										onclick={() => (outputFormat = key as FormatKey)}
@@ -277,7 +277,7 @@
 												Quality (CRF)
 											</label>
 											<span
-												class="text-sm text-primary-700 font-bold font-mono px-2 py-0.5 rounded bg-primary-100 dark:text-primary-300 dark:bg-primary-900/50"
+												class="text-sm text-primary-600 font-bold font-mono px-2 py-0.5 rounded bg-primary-500/15 dark:text-primary-400"
 											>
 												{quality}
 											</span>

@@ -3,7 +3,6 @@
 	import { onMount } from 'svelte';
 	import { video } from '$lib/state/video-manager.svelte';
 	import { themeStore } from '$lib/state/theme.svelte';
-	import { siteConfig } from '$lib/config';
 	import Logo from '$lib/assets/logo.svg';
 	import {
 		Minimize2,
@@ -14,8 +13,8 @@
 		Sun,
 		Moon,
 		Monitor,
-		Menu,
-		AlertCircle
+		AlertCircle,
+		ChevronDown
 	} from 'lucide-svelte';
 
 	let { children } = $props();
@@ -63,10 +62,6 @@
 	// Theme icon component based on current theme
 	const ThemeIcon = $derived(
 		themeStore.theme === 'light' ? Sun : themeStore.theme === 'dark' ? Moon : Monitor
-	);
-
-	const themeLabel = $derived(
-		themeStore.theme === 'light' ? 'Light' : themeStore.theme === 'dark' ? 'Dark' : 'System'
 	);
 </script>
 
@@ -123,7 +118,7 @@
 						class={[
 							'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all',
 							currentToolId === tool.id
-								? 'bg-primary-50 dark:bg-primary-950/50 text-primary-700 dark:text-primary-300 shadow-sm'
+								? 'bg-primary-500/10 text-primary-600 dark:text-primary-400'
 								: 'text-muted hover:text-base hover-bg'
 						]}
 					>
@@ -131,7 +126,7 @@
 							class={[
 								'rounded-lg p-2 transition-colors',
 								currentToolId === tool.id
-									? 'bg-primary-100 dark:bg-primary-900/50 text-primary-600 dark:text-primary-400'
+									? 'bg-primary-500/15 text-primary-600 dark:text-primary-400'
 									: 'bg-surface-100 dark:bg-surface-800 text-surface-500'
 							]}
 						>
@@ -147,37 +142,66 @@
 		</nav>
 
 		<!-- Footer -->
-		<div class="p-3 border-t border-base space-y-2">
-			<!-- Theme toggle -->
-			<button
-				onclick={() => themeStore.toggle()}
-				class="hover-bg text-sm text-muted font-medium px-3 py-2.5 rounded-xl flex gap-3 w-full transition-colors items-center hover:text-base"
-			>
-				<div class="p-2 rounded-lg bg-surface-100 dark:bg-surface-800">
-					<ThemeIcon class="h-4 w-4" />
-				</div>
-				<span>{themeLabel}</span>
-			</button>
-			<div class="text-xs text-subtle py-2 text-center">
-				v{siteConfig.version} • All processing is local
+		<div class="px-3 py-4 border-t border-base flex justify-end">
+			<div class="p-0.5 rounded-lg bg-surface-100 flex dark:bg-surface-800">
+				<button
+					onclick={() => themeStore.setTheme('light')}
+					class={[
+						'p-1.5 rounded-md transition-all',
+						themeStore.theme === 'light'
+							? 'bg-base text-base shadow-sm'
+							: 'text-muted hover:text-base'
+					]}
+					aria-label="Light theme"
+				>
+					<Sun class="h-4 w-4" />
+				</button>
+				<button
+					onclick={() => themeStore.setTheme('dark')}
+					class={[
+						'p-1.5 rounded-md transition-all',
+						themeStore.theme === 'dark'
+							? 'bg-base text-base shadow-sm'
+							: 'text-muted hover:text-base'
+					]}
+					aria-label="Dark theme"
+				>
+					<Moon class="h-4 w-4" />
+				</button>
+				<button
+					onclick={() => themeStore.setTheme('system')}
+					class={[
+						'p-1.5 rounded-md transition-all',
+						themeStore.theme === 'system'
+							? 'bg-base text-base shadow-sm'
+							: 'text-muted hover:text-base'
+					]}
+					aria-label="System theme"
+				>
+					<Monitor class="h-4 w-4" />
+				</button>
 			</div>
 		</div>
 	</aside>
 
 	<!-- Main Content -->
-	<main class="flex flex-1 flex-col relative overflow-hidden bg-surface-50 dark:bg-surface-900/50">
+	<main class="bg-surface-50 flex flex-1 flex-col relative overflow-hidden dark:bg-surface-900/50">
 		<!-- Mobile Header -->
-		<header class="p-4 border-b border-base bg-base flex items-center justify-between lg:hidden">
+		<header class="px-4 py-3 border-b border-base bg-base flex items-center lg:hidden">
+			<a href="/tools/compress" class="flex-shrink-0">
+				<img src={Logo} alt="Roll" class="h-7 w-7" />
+			</a>
 			<button
-				class="hover-bg p-2 rounded-lg -ml-2"
+				class="hover-bg px-2 py-1 rounded-lg flex gap-1 items-center -my-1"
 				onclick={() => (sidebarOpen = true)}
 				aria-label="Open menu"
 			>
-				<Menu class="h-6 w-6" />
+				<span class="font-semibold">
+					{tools.find((t) => t.id === currentToolId)?.name || 'Tools'}
+				</span>
+				<ChevronDown class="mt-0.5 h-4 w-4" />
 			</button>
-			<span class="font-semibold">
-				{tools.find((t) => t.id === currentToolId)?.name || 'Roll'}
-			</span>
+			<div class="flex-1"></div>
 			<button
 				onclick={() => themeStore.toggle()}
 				class="hover-bg p-2 rounded-lg -mr-2"

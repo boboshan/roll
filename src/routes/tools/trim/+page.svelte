@@ -90,7 +90,7 @@
 </script>
 
 {#if !video.file}
-	<div class="flex flex-1 flex-col min-h-[50vh] items-center justify-center">
+	<div class="flex flex-1 flex-col items-center justify-center">
 		<div class="max-w-2xl w-full">
 			<FileUpload />
 		</div>

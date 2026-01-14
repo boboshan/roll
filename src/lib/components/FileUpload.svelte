@@ -59,7 +59,7 @@
 			'card p-8 md:p-12 text-center cursor-pointer transition-all duration-200 group min-h-[220px] flex flex-col items-center justify-center',
 			'border-2 border-dashed',
 			isDragOver
-				? 'border-primary-500 bg-primary-50 dark:bg-primary-950/30 scale-[1.02]'
+				? 'border-primary-500 bg-primary-500/10 scale-[1.02]'
 				: 'border-surface-300 dark:border-surface-700 hover:border-primary-400 dark:hover:border-primary-600 hover:shadow-lg'
 		]}
 		ondragover={(e) => {
@@ -84,8 +84,8 @@
 			class={[
 				'mx-auto mb-4 rounded-2xl flex h-16 w-16 items-center justify-center transition-all duration-200',
 				isDragOver
-					? 'bg-primary-100 dark:bg-primary-900/50 text-primary-600 dark:text-primary-400 scale-110'
-					: 'bg-primary-50 dark:bg-primary-950/50 text-primary-600 dark:text-primary-400 group-hover:scale-105'
+					? 'bg-primary-500/20 text-primary-600 dark:text-primary-400 scale-110'
+					: 'bg-primary-500/10 text-primary-600 dark:text-primary-400 group-hover:scale-105'
 			]}
 		>
 			<Upload class={`h-8 w-8 ${isDragOver ? 'animate-bounce' : ''}`} />

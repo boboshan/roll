@@ -107,10 +107,36 @@
 		else isDraggingPlayhead = true;
 	}
 
+	function handleTouchStart(e: TouchEvent, type: 'start' | 'end' | 'playhead') {
+		e.preventDefault();
+		e.stopPropagation();
+		if (type === 'start') isDraggingStart = true;
+		else if (type === 'end') isDraggingEnd = true;
+		else isDraggingPlayhead = true;
+	}
+
 	function handleMouseMove(e: MouseEvent) {
 		if (!isDraggingStart && !isDraggingEnd && !isDraggingPlayhead) return;
 
 		const time = getTimeFromPosition(e.clientX);
+
+		if (isDraggingStart) {
+			startTime = Math.max(0, Math.min(time, endTime - 0.1));
+			onSeek?.(startTime);
+		} else if (isDraggingEnd) {
+			endTime = Math.max(startTime + 0.1, Math.min(time, duration));
+			onSeek?.(endTime);
+		} else if (isDraggingPlayhead) {
+			playheadTime = Math.max(startTime, Math.min(time, endTime));
+			onSeek?.(playheadTime);
+		}
+	}
+
+	function handleTouchMove(e: TouchEvent) {
+		if (!isDraggingStart && !isDraggingEnd && !isDraggingPlayhead) return;
+
+		const touch = e.touches[0];
+		const time = getTimeFromPosition(touch.clientX);
 
 		if (isDraggingStart) {
 			startTime = Math.max(0, Math.min(time, endTime - 0.1));
@@ -130,6 +156,12 @@
 		isDraggingPlayhead = false;
 	}
 
+	function handleTouchEnd() {
+		isDraggingStart = false;
+		isDraggingEnd = false;
+		isDraggingPlayhead = false;
+	}
+
 	function handleContainerClick(e: MouseEvent) {
 		if (isDraggingStart || isDraggingEnd || isDraggingPlayhead) return;
 		const time = getTimeFromPosition(e.clientX);
@@ -144,9 +176,13 @@
 		if (typeof window !== 'undefined') {
 			window.addEventListener('mousemove', handleMouseMove);
 			window.addEventListener('mouseup', handleMouseUp);
+			window.addEventListener('touchmove', handleTouchMove);
+			window.addEventListener('touchend', handleTouchEnd);
 			return () => {
 				window.removeEventListener('mousemove', handleMouseMove);
 				window.removeEventListener('mouseup', handleMouseUp);
+				window.removeEventListener('touchmove', handleTouchMove);
+				window.removeEventListener('touchend', handleTouchEnd);
 			};
 		}
 	});
@@ -251,10 +287,11 @@
 			>
 				<!-- Start handle (left accent bar) -->
 				<div
-					class="rounded-l-lg bg-accent-400 flex flex-shrink-0 h-full w-5 cursor-ew-resize items-center justify-center z-20"
+					class="rounded-l-lg bg-accent-400 flex flex-shrink-0 h-full w-5 cursor-ew-resize items-center justify-center z-20 touch-none"
 					class:ring-2={isDraggingStart}
 					class:ring-white={isDraggingStart}
 					onmousedown={(e) => handleMouseDown(e, 'start')}
+					ontouchstart={(e) => handleTouchStart(e, 'start')}
 					role="slider"
 					tabindex="-1"
 					aria-label="Start time handle"
@@ -268,10 +305,11 @@
 
 				<!-- End handle (right accent bar) -->
 				<div
-					class="rounded-r-lg bg-accent-400 flex flex-shrink-0 h-full w-5 cursor-ew-resize items-center justify-center z-20"
+					class="rounded-r-lg bg-accent-400 flex flex-shrink-0 h-full w-5 cursor-ew-resize items-center justify-center z-20 touch-none"
 					class:ring-2={isDraggingEnd}
 					class:ring-white={isDraggingEnd}
 					onmousedown={(e) => handleMouseDown(e, 'end')}
+					ontouchstart={(e) => handleTouchStart(e, 'end')}
 					role="slider"
 					tabindex="-1"
 					aria-label="End time handle"
@@ -283,9 +321,10 @@
 
 			<!-- Playhead -->
 			<div
-				class="h-full w-1 cursor-ew-resize top-0 absolute z-30"
+				class="h-full w-1 cursor-ew-resize top-0 absolute z-30 touch-none"
 				style="left: {playheadPercent}%"
 				onmousedown={(e) => handleMouseDown(e, 'playhead')}
+				ontouchstart={(e) => handleTouchStart(e, 'playhead')}
 				role="slider"
 				tabindex="-1"
 				aria-label="Playhead"

@@ -58,7 +58,7 @@
 </script>
 
 {#if !video.file}
-	<div class="flex flex-1 flex-col min-h-[50vh] items-center justify-center">
+	<div class="flex flex-1 flex-col items-center justify-center">
 		<div class="max-w-2xl w-full">
 			<FileUpload />
 		</div>
@@ -137,7 +137,7 @@
 									>Quality Level (CRF)</label
 								>
 								<span
-									class="text-sm text-primary-700 font-bold font-mono px-2 py-0.5 rounded bg-primary-50 dark:text-primary-300 dark:bg-primary-950/50"
+									class="text-sm text-primary-600 font-bold font-mono px-2 py-0.5 rounded bg-primary-500/15 dark:text-primary-400"
 									>{crf}</span
 								>
 							</div>
