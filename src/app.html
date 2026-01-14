@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en" class="h-full">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="color-scheme" content="light dark" />
+		<script>
+			// Prevent flash of wrong theme
+			(function () {
+				const stored = localStorage.getItem('theme');
+				const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+				const theme = stored || (prefersDark ? 'dark' : 'light');
+				if (theme === 'dark') {
+					document.documentElement.classList.add('dark');
+				}
+			})();
+		</script>
+		%sveltekit.head%
+	</head>
+	<body class="h-full bg-base text-base" data-sveltekit-preload-data="hover">
+		<div style="display: contents">%sveltekit.body%</div>
+	</body>
+</html>

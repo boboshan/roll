@@ -1,0 +1,216 @@
+<script lang="ts">
+	import { page } from '$app/state';
+	import { onMount } from 'svelte';
+	import { video } from '$lib/state/video-manager.svelte';
+	import { themeStore } from '$lib/state/theme.svelte';
+	import { siteConfig } from '$lib/config';
+	import Logo from '$lib/assets/logo.svg';
+	import {
+		Minimize2,
+		ArrowLeftRight,
+		Scissors,
+		VolumeX,
+		X,
+		Sun,
+		Moon,
+		Monitor,
+		Menu,
+		AlertCircle
+	} from 'lucide-svelte';
+
+	let { children } = $props();
+
+	let sidebarOpen = $state(false);
+
+	onMount(() => {
+		video.init();
+	});
+
+	const currentToolId = $derived(page.url.pathname.split('/')[2]);
+
+	// Tools configuration with lucide icon components
+	const tools = [
+		{
+			id: 'compress',
+			name: 'Compress',
+			description: 'Reduce file size',
+			icon: Minimize2
+		},
+		{
+			id: 'convert',
+			name: 'Convert',
+			description: 'Change format',
+			icon: ArrowLeftRight
+		},
+		{
+			id: 'trim',
+			name: 'Trim',
+			description: 'Cut video length',
+			icon: Scissors
+		},
+		{
+			id: 'mute',
+			name: 'Mute',
+			description: 'Remove audio',
+			icon: VolumeX
+		}
+	];
+
+	function closeSidebar() {
+		sidebarOpen = false;
+	}
+
+	// Theme icon component based on current theme
+	const ThemeIcon = $derived(
+		themeStore.theme === 'light' ? Sun : themeStore.theme === 'dark' ? Moon : Monitor
+	);
+
+	const themeLabel = $derived(
+		themeStore.theme === 'light' ? 'Light' : themeStore.theme === 'dark' ? 'Dark' : 'System'
+	);
+</script>
+
+<!-- Mobile overlay -->
+{#if sidebarOpen}
+	<div
+		class="bg-black/50 inset-0 fixed z-40 backdrop-blur-sm lg:hidden"
+		onclick={closeSidebar}
+		onkeydown={(e) => e.key === 'Escape' && closeSidebar()}
+		role="button"
+		tabindex="0"
+		aria-label="Close sidebar"
+	></div>
+{/if}
+
+<div class="text-base font-sans bg-elevated flex h-screen overflow-hidden">
+	<!-- Sidebar -->
+	<aside
+		class={[
+			'fixed inset-y-0 left-0 z-50 w-72 transform transition-transform duration-300 ease-out lg:relative lg:translate-x-0',
+			'bg-base border-r border-base flex flex-col shadow-xl lg:shadow-none',
+			sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+		]}
+	>
+		<!-- Logo -->
+		<div class="p-5 border-b border-base flex items-center justify-between">
+			<a href="/tools/compress" class="group flex gap-3 items-center">
+				<div class="flex-shrink-0 h-10 w-10">
+					<img src={Logo} alt="Roll" class="h-full w-full" />
+				</div>
+				<div>
+					<h1 class="text-lg tracking-tight font-bold">Roll</h1>
+					<p class="text-xs text-muted">Edit videos in browser</p>
+				</div>
+			</a>
+			<!-- Mobile close button -->
+			<button
+				class="hover-bg p-2 rounded-lg lg:hidden"
+				onclick={closeSidebar}
+				aria-label="Close menu"
+			>
+				<X class="h-5 w-5" />
+			</button>
+		</div>
+
+		<!-- Navigation -->
+		<nav class="p-3 flex-1 overflow-y-auto">
+			<p class="text-xs text-muted tracking-wider font-semibold mb-2 px-3 uppercase">Tools</p>
+			<div class="space-y-1">
+				{#each tools as tool (tool.id)}
+					<a
+						href="/tools/{tool.id}"
+						onclick={closeSidebar}
+						class={[
+							'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all',
+							currentToolId === tool.id
+								? 'bg-primary-50 dark:bg-primary-950/50 text-primary-700 dark:text-primary-300 shadow-sm'
+								: 'text-muted hover:text-base hover-bg'
+						]}
+					>
+						<div
+							class={[
+								'rounded-lg p-2 transition-colors',
+								currentToolId === tool.id
+									? 'bg-primary-100 dark:bg-primary-900/50 text-primary-600 dark:text-primary-400'
+									: 'bg-surface-100 dark:bg-surface-800 text-surface-500'
+							]}
+						>
+							<tool.icon class="h-4 w-4" />
+						</div>
+						<div class="flex-1 min-w-0">
+							<span class="block truncate">{tool.name}</span>
+							<span class="text-xs text-muted block truncate">{tool.description}</span>
+						</div>
+					</a>
+				{/each}
+			</div>
+		</nav>
+
+		<!-- Footer -->
+		<div class="p-3 border-t border-base space-y-2">
+			<!-- Theme toggle -->
+			<button
+				onclick={() => themeStore.toggle()}
+				class="hover-bg text-sm text-muted font-medium px-3 py-2.5 rounded-xl flex gap-3 w-full transition-colors items-center hover:text-base"
+			>
+				<div class="p-2 rounded-lg bg-surface-100 dark:bg-surface-800">
+					<ThemeIcon class="h-4 w-4" />
+				</div>
+				<span>{themeLabel}</span>
+			</button>
+			<div class="text-xs text-subtle py-2 text-center">
+				v{siteConfig.version} • All processing is local
+			</div>
+		</div>
+	</aside>
+
+	<!-- Main Content -->
+	<main class="flex flex-1 flex-col relative overflow-hidden bg-surface-50 dark:bg-surface-900/50">
+		<!-- Mobile Header -->
+		<header class="p-4 border-b border-base bg-base flex items-center justify-between lg:hidden">
+			<button
+				class="hover-bg p-2 rounded-lg -ml-2"
+				onclick={() => (sidebarOpen = true)}
+				aria-label="Open menu"
+			>
+				<Menu class="h-6 w-6" />
+			</button>
+			<span class="font-semibold">
+				{tools.find((t) => t.id === currentToolId)?.name || 'Roll'}
+			</span>
+			<button
+				onclick={() => themeStore.toggle()}
+				class="hover-bg p-2 rounded-lg -mr-2"
+				aria-label="Toggle theme"
+			>
+				<ThemeIcon class="h-5 w-5" />
+			</button>
+		</header>
+
+		<!-- Error Banner -->
+		{#if video.error}
+			<div
+				class="text-red-700 p-4 border-b border-red-200 bg-red-50 flex items-center justify-between z-50 dark:text-red-300 dark:border-red-800/50 dark:bg-red-950/50"
+			>
+				<div class="flex gap-3 items-center">
+					<AlertCircle class="flex-shrink-0 h-5 w-5" />
+					<span>{video.error}</span>
+				</div>
+				<button
+					onclick={() => (video.error = '')}
+					class="p-1 rounded transition-colors hover:bg-red-100 dark:hover:bg-red-900/50"
+					aria-label="Dismiss error"
+				>
+					<X class="h-4 w-4" />
+				</button>
+			</div>
+		{/if}
+
+		<!-- Scrollable Content Area -->
+		<div class="p-4 flex-1 overflow-y-auto lg:p-8 md:p-6">
+			<div class="mx-auto flex flex-col h-full max-w-6xl">
+				{@render children()}
+			</div>
+		</div>
+	</main>
+</div>
