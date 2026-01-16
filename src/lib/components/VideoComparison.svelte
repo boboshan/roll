@@ -330,7 +330,7 @@
 				<!-- Mute/Unmute Button -->
 				<button
 					onclick={() => (isMuted = !isMuted)}
-					class="hover-bg text-muted rounded-xl flex h-9 w-9 transition-all items-center justify-center hover:text-base active:scale-95"
+					class="bg-hover text-muted rounded-xl flex h-9 w-9 transition-all items-center justify-center hover:text-base active:scale-95"
 					aria-label={isMuted ? 'Unmute' : 'Mute'}
 				>
 					{#if isMuted}

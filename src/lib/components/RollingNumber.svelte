@@ -14,13 +14,13 @@
 	const numbers = Array.from({ length: 10 }, (_, i) => i);
 </script>
 
-<div class="font-bold font-mono inline-flex items-baseline">
-	<div class="leading-none flex h-[1em] overflow-hidden">
+<div class="font-mono flex items-baseline">
+	<div class="flex h-[1em] overflow-hidden">
 		{#each digits as digit, i (i)}
 			{#if digit === '.'}
 				<span>.</span>
 			{:else}
-				<div class="h-[1em] w-[0.6em] relative">
+				<div class="h-[1em] w-[0.6em] relative font-bold">
 					<div
 						class="flex flex-col transition-transform duration-300 left-0 top-0 absolute"
 						style="transform: translateY(-{parseInt(digit) * 10}%)"
@@ -34,6 +34,6 @@
 		{/each}
 	</div>
 	{#if unit}
-		<span class="text-sm text-gray-500 ml-1 uppercase">{unit}</span>
+		<span class="text-sm text-subtle ml-1 uppercase">{unit}</span>
 	{/if}
 </div>

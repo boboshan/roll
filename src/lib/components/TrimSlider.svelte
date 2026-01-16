@@ -287,7 +287,7 @@
 			>
 				<!-- Start handle (left accent bar) -->
 				<div
-					class="rounded-l-lg bg-accent-400 flex flex-shrink-0 h-full w-5 cursor-ew-resize items-center justify-center z-20 touch-none"
+					class="rounded-l-lg bg-primary-500 flex flex-shrink-0 h-full w-5 cursor-ew-resize items-center justify-center z-20 touch-none"
 					class:ring-2={isDraggingStart}
 					class:ring-white={isDraggingStart}
 					onmousedown={(e) => handleMouseDown(e, 'start')}
@@ -297,15 +297,15 @@
 					aria-label="Start time handle"
 					aria-valuenow={startTime}
 				>
-					<div class="rounded-full bg-accent-600 h-8 w-1"></div>
+					<div class="rounded-full bg-primary-700 h-8 w-1"></div>
 				</div>
 
 				<!-- Middle area with top/bottom accent borders -->
-				<div class="border-y-4 border-accent-400 flex-1 pointer-events-none"></div>
+				<div class="border-y-4 border-primary-500 flex-1 pointer-events-none"></div>
 
 				<!-- End handle (right accent bar) -->
 				<div
-					class="rounded-r-lg bg-accent-400 flex flex-shrink-0 h-full w-5 cursor-ew-resize items-center justify-center z-20 touch-none"
+					class="rounded-r-lg bg-primary-500 flex flex-shrink-0 h-full w-5 cursor-ew-resize items-center justify-center z-20 touch-none"
 					class:ring-2={isDraggingEnd}
 					class:ring-white={isDraggingEnd}
 					onmousedown={(e) => handleMouseDown(e, 'end')}
@@ -315,7 +315,7 @@
 					aria-label="End time handle"
 					aria-valuenow={endTime}
 				>
-					<div class="rounded-full bg-accent-600 h-8 w-1"></div>
+					<div class="rounded-full bg-primary-700 h-8 w-1"></div>
 				</div>
 			</div>
 
@@ -354,11 +354,11 @@
 				max={endTime - 0.1}
 				bind:value={startTime}
 				onchange={() => onSeek?.(startTime)}
-				class="text-sm text-base font-mono px-2 py-1.5 outline-none border border-base rounded-lg bg-base w-20 focus:border-accent-400 focus:ring-2 focus:ring-accent-400"
+				class="text-sm text-base font-mono px-2 py-1.5 outline-none border border-base rounded-lg bg-base w-20 focus:border-primary-500 focus:ring-2 focus:ring-primary-500"
 			/>
 		</div>
 		<div
-			class="text-sm text-accent-700 font-medium px-3 py-1.5 rounded-lg bg-accent-50 dark:text-accent-300 dark:bg-accent-950/50"
+			class="text-sm text-primary-700 font-medium px-3 py-1.5 rounded-lg bg-primary-50 dark:text-primary-300 dark:bg-primary-950/50"
 		>
 			{formatTime(endTime - startTime)}
 		</div>
@@ -372,7 +372,7 @@
 				max={duration}
 				bind:value={endTime}
 				onchange={() => onSeek?.(endTime)}
-				class="text-sm text-base font-mono px-2 py-1.5 outline-none border border-base rounded-lg bg-base w-20 focus:border-accent-400 focus:ring-2 focus:ring-accent-400"
+				class="text-sm text-base font-mono px-2 py-1.5 outline-none border border-base rounded-lg bg-base w-20 focus:border-primary-500 focus:ring-2 focus:ring-primary-500"
 			/>
 		</div>
 	</div>

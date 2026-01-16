@@ -99,7 +99,7 @@
 			</a>
 			<!-- Mobile close button -->
 			<button
-				class="hover-bg p-2 rounded-lg lg:hidden"
+				class="bg-hover p-2 rounded-lg lg:hidden"
 				onclick={closeSidebar}
 				aria-label="Close menu"
 			>
@@ -119,7 +119,7 @@
 							'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all',
 							currentToolId === tool.id
 								? 'bg-primary-500/10 text-primary-600 dark:text-primary-400'
-								: 'text-muted hover:text-base hover-bg'
+								: 'text-muted hover:text-base bg-hover'
 						]}
 					>
 						<div
@@ -192,7 +192,7 @@
 				<img src={Logo} alt="Roll" class="h-7 w-7" />
 			</a>
 			<button
-				class="hover-bg px-2 py-1 rounded-lg flex gap-1 items-center -my-1"
+				class="bg-hover px-2 py-1 rounded-lg flex gap-1 items-center -my-1"
 				onclick={() => (sidebarOpen = true)}
 				aria-label="Open menu"
 			>
@@ -204,7 +204,7 @@
 			<div class="flex-1"></div>
 			<button
 				onclick={() => themeStore.toggle()}
-				class="hover-bg p-2 rounded-lg -mr-2"
+				class="bg-hover p-2 rounded-lg -mr-2"
 				aria-label="Toggle theme"
 			>
 				<ThemeIcon class="h-5 w-5" />

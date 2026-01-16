@@ -96,7 +96,7 @@
 		</div>
 	</div>
 {:else}
-	<div class="pb-20 space-y-6">
+	<div class="pb-28 space-y-6 lg:pb-8">
 		<!-- Header -->
 		<div
 			class="p-4 card flex flex-col gap-3 top-0 justify-between sticky z-30 md:flex-row md:items-center"
@@ -167,58 +167,64 @@
 				{/if}
 			</div>
 
-			<!-- Actions Column -->
-			<div class="space-y-6">
-				<div class="p-5 card md:p-6">
-					<h3 class="text-base font-bold mb-4">Trim Video</h3>
-
-					<div class="text-sm text-muted mb-6">
-						<p>Drag the orange handles to select the portion you want to keep.</p>
+			<!-- Actions Column - Sticky on mobile -->
+			<div class="fixed inset-x-0 bottom-0 p-4 bg-base border-t border-base z-40 lg:relative lg:inset-auto lg:p-0 lg:bg-transparent lg:border-0 lg:z-auto ">
+				<div class="card p-4 lg:p-6 lg:sticky lg:top-24">
+					<!-- Desktop header -->
+					<div class="hidden lg:block mb-4">
+						<h3 class="text-base font-bold">Trim Video</h3>
+						<p class="text-sm text-muted mt-1">Drag the orange handles to select the portion you want to keep.</p>
 					</div>
 
 					{#if video.status === 'done'}
-						<div
-							class="text-green-700 mb-4 p-4 text-center rounded-xl bg-green-50 dark:text-green-300 dark:bg-green-950/50"
-						>
-							<p class="font-medium">Video Trimmed Successfully!</p>
+						<!-- Success state -->
+						<div class="hidden lg:block text-green-700 mb-4 p-3 text-center rounded-xl bg-green-50 dark:text-green-300 dark:bg-green-950/50">
+							<p class="text-sm font-medium">Video Trimmed Successfully!</p>
 						</div>
-						<a
-							href={video.resultUrl}
-							download={video.downloadName('trimmed')}
-							class="text-white font-bold px-4 py-3 rounded-xl bg-green-600 flex gap-2 w-full shadow-sm transform transition-all items-center justify-center hover:bg-green-700 active:scale-98"
-						>
-							<Download class="h-5 w-5" />
-							Download Trimmed Video
-						</a>
-						<button
-							onclick={() => {
-								video.clearResult();
-								endTime = duration;
-								startTime = 0;
-							}}
-							class="text-sm text-primary-600 font-medium mt-2 py-2 w-full dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300"
-						>
-							Trim Again
-						</button>
+						<div class="flex gap-2 lg:flex-col">
+							<a
+								href={video.resultUrl}
+								download={video.downloadName('trimmed')}
+								class="text-white font-semibold px-4 py-3.5 rounded-xl bg-green-600 flex gap-2 flex-1 shadow-sm transition-all items-center justify-center hover:bg-green-700 active:scale-98 lg:py-3"
+							>
+								<Download class="h-5 w-5" />
+								<span>Download</span>
+							</a>
+							<button
+								onclick={() => {
+									video.clearResult();
+									endTime = duration;
+									startTime = 0;
+								}}
+								class="btn-ghost px-4 py-3.5 lg:py-2 lg:mt-1"
+							>
+								Trim Again
+							</button>
+						</div>
 					{:else if video.status === 'processing'}
+						<!-- Processing state -->
 						<button
 							disabled
-							class="text-muted font-bold px-4 py-3 rounded-xl bg-muted flex gap-2 w-full cursor-not-allowed items-center justify-center"
+							class="text-muted font-semibold px-4 py-3.5 rounded-xl bg-muted flex gap-2 w-full cursor-not-allowed items-center justify-center lg:py-3"
 						>
-							<div
-								class="border-2 border-surface-400 border-t-transparent rounded-full h-5 w-5 animate-spin"
-							></div>
-							Processing
+							<div class="border-2 border-surface-400 border-t-transparent rounded-full h-5 w-5 animate-spin"></div>
+							<span>Processing {video.progress.toFixed(0)}%</span>
 						</button>
 					{:else}
-						<button
-							class="btn-accent py-3 flex gap-2 w-full items-center justify-center"
-							onclick={trimVideo}
-							disabled={endTime - startTime < 0.1}
-						>
-							<Scissors class="h-5 w-5" />
-							Trim Video
-						</button>
+						<!-- Ready state -->
+						<div class="flex gap-3 items-center lg:flex-col lg:items-stretch">
+							<div class="flex-1 lg:hidden">
+								<p class="text-sm font-medium text-base">Selection: {formatDuration(endTime - startTime)}</p>
+							</div>
+							<button
+								class="btn-primary py-3.5 px-6 flex gap-2 items-center justify-center lg:w-full lg:py-3"
+								onclick={trimVideo}
+								disabled={endTime - startTime < 0.1}
+							>
+								<Scissors class="h-5 w-5" />
+								<span>Trim Video</span>
+							</button>
+						</div>
 					{/if}
 				</div>
 			</div>

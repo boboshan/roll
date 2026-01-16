@@ -1,4 +1,4 @@
-import { defineConfig, presetWind4 } from 'unocss';
+import { defineConfig, presetWind4,presetWebFonts } from 'unocss';
 
 export default defineConfig({
 	presets: [
@@ -7,6 +7,13 @@ export default defineConfig({
 				reset: true
 			},
 			dark: 'class'
+		}),
+		presetWebFonts({
+			provider: 'google', // default provider
+			fonts: {
+				// these will extend the default theme
+				sans: 'Open Sans:100,400,500,600,700,900',
+			},
 		})
 	],
 	theme: {
@@ -68,15 +75,15 @@ export default defineConfig({
 		'text-muted': 'text-surface-500 dark:text-surface-400',
 		'text-subtle': 'text-surface-400 dark:text-surface-500',
 		// Interactive states
-		'hover-bg': 'hover:bg-surface-100 dark:hover:bg-surface-800',
-		'active-bg': 'bg-primary-500/10',
+		'bg-hover': 'hover:bg-surface-100 dark:hover:bg-surface-800',
+		'bg-active': 'bg-primary-500/10',
 		// Button variants
 		'btn-primary':
 			'bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white font-semibold px-4 py-2.5 rounded-xl transition-all active:scale-98',
 		'btn-accent':
 			'bg-accent-500 hover:bg-accent-600 active:bg-accent-700 text-white font-semibold px-4 py-2.5 rounded-xl transition-all active:scale-98',
 		'btn-ghost':
-			'text-muted hover:text-base hover-bg px-4 py-2 rounded-xl transition-colors font-medium',
+			'text-muted hover:text-base bg-hover px-4 py-2 rounded-xl transition-colors font-medium',
 		// Card
 		card: 'bg-base border border-base rounded-2xl shadow-sm',
 		'card-elevated': 'bg-elevated border border-base rounded-2xl'

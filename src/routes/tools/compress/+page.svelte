@@ -64,7 +64,7 @@
 		</div>
 	</div>
 {:else}
-	<div class="pb-20 space-y-6">
+	<div class="pb-28 space-y-6 lg:pb-8">
 		<!-- Header -->
 		<div
 			class="p-4 card flex flex-col gap-3 top-0 justify-between sticky z-30 md:flex-row md:items-center"
@@ -110,30 +110,25 @@
 				</div>
 			</div>
 
-			<!-- Right Column: Controls -->
-			<div class="space-y-6">
-				<div class="p-5 card md:p-6">
+			<!-- Right Column: Settings (visible on desktop) -->
+			<div class="hidden lg:block ">
+				<div class="card p-6 sticky top-24">
 					<h3 class="text-base font-bold mb-4">Compression Settings</h3>
 
-					<div class="space-y-6">
-						<div>
-							<h4 class="text-xs text-muted tracking-wider font-bold mb-2 uppercase">
-								Size Analysis
-							</h4>
-							<FileSizeComparison
-								originalSize={video.sourceSize}
-								compressedSize={video.status === 'done' ? video.resultSize : 0}
-								alreadyCompressed={video.isOptimal}
-								isProcessing={video.status === 'processing'}
-								progress={video.progress}
-							/>
-						</div>
+					<div class="space-y-5">
+						<FileSizeComparison
+							originalSize={video.sourceSize}
+							compressedSize={video.status === 'done' ? video.resultSize : 0}
+							alreadyCompressed={video.isOptimal}
+							isProcessing={video.status === 'processing'}
+							progress={video.progress}
+						/>
 
 						<hr class="border-base" />
 
 						<div>
 							<div class="mb-2 flex items-end justify-between">
-								<label for="crf" class="text-sm text-base font-medium block"
+								<label for="crf-desktop" class="text-sm text-base font-medium block"
 									>Quality Level (CRF)</label
 								>
 								<span
@@ -143,7 +138,7 @@
 							</div>
 
 							<input
-								id="crf"
+								id="crf-desktop"
 								type="range"
 								min="18"
 								max="35"
@@ -162,25 +157,23 @@
 							{#if video.status === 'processing'}
 								<button
 									disabled
-									class="text-muted font-bold px-4 py-3 rounded-xl bg-muted flex gap-2 w-full cursor-not-allowed items-center justify-center"
+									class="text-muted font-semibold px-4 py-3 rounded-xl bg-muted flex gap-2 w-full cursor-not-allowed items-center justify-center"
 								>
-									<div
-										class="border-2 border-surface-400 border-t-transparent rounded-full h-5 w-5 animate-spin"
-									></div>
-									Processing
+									<div class="border-2 border-surface-400 border-t-transparent rounded-full h-5 w-5 animate-spin"></div>
+									<span>Processing {video.progress.toFixed(0)}%</span>
 								</button>
 							{:else if video.status === 'done'}
 								<a
 									href={video.resultUrl}
 									download={video.downloadName('compressed')}
-									class="text-white font-bold px-4 py-3 rounded-xl bg-green-600 flex gap-2 w-full shadow-sm transform transition-all items-center justify-center hover:bg-green-700 active:scale-98"
+									class="text-white font-semibold px-4 py-3 rounded-xl bg-green-600 flex gap-2 w-full shadow-sm transition-all items-center justify-center hover:bg-green-700 active:scale-98"
 								>
 									<Download class="h-5 w-5" />
-									Download Result
+									<span>Download Result</span>
 								</a>
 								<button
 									onclick={transcode}
-									class="text-sm text-primary-600 font-medium mt-2 py-2 w-full dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300"
+									class="btn-ghost text-sm mt-2 py-2 w-full"
 								>
 									Compress Again
 								</button>
@@ -192,6 +185,53 @@
 						</div>
 					</div>
 				</div>
+			</div>
+		</div>
+
+		<!-- Mobile Bottom Bar -->
+		<div class="fixed inset-x-0 bottom-0 p-4 bg-base border-t border-base z-40 lg:hidden">
+			<div class="card p-4">
+				{#if video.status === 'processing'}
+					<button
+						disabled
+						class="text-muted font-semibold px-4 py-3.5 rounded-xl bg-muted flex gap-2 w-full cursor-not-allowed items-center justify-center"
+					>
+						<div class="border-2 border-surface-400 border-t-transparent rounded-full h-5 w-5 animate-spin"></div>
+						<span>Processing {video.progress.toFixed(0)}%</span>
+					</button>
+				{:else if video.status === 'done'}
+					<div class="flex gap-2">
+						<a
+							href={video.resultUrl}
+							download={video.downloadName('compressed')}
+							class="text-white font-semibold px-4 py-3.5 rounded-xl bg-green-600 flex gap-2 flex-1 shadow-sm transition-all items-center justify-center hover:bg-green-700 active:scale-98"
+						>
+							<Download class="h-5 w-5" />
+							<span>Download</span>
+						</a>
+						<button onclick={transcode} class="btn-ghost px-4 py-3.5">
+							Again
+						</button>
+					</div>
+				{:else}
+					<div class="flex gap-3 items-center">
+						<div class="flex-1 flex items-center gap-2">
+							<label for="crf-mobile" class="text-sm text-muted font-medium whitespace-nowrap">Quality</label>
+							<input
+								id="crf-mobile"
+								type="range"
+								min="18"
+								max="35"
+								bind:value={crf}
+								class="appearance-none accent-primary-600 rounded-lg bg-surface-200 h-2 flex-1 cursor-pointer dark:bg-surface-700"
+							/>
+							<span class="text-sm text-primary-600 font-bold font-mono w-6 dark:text-primary-400">{crf}</span>
+						</div>
+						<button class="btn-primary py-3.5 px-6" onclick={transcode}>
+							Compress
+						</button>
+					</div>
+				{/if}
 			</div>
 		</div>
 	</div>

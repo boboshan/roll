@@ -102,7 +102,7 @@
 			</div>
 
 			<!-- Actions Column -->
-			<div class="space-y-6">
+			<div class="space-y-6 ">
 				<div class="p-5 card md:p-6">
 					<h3 class="text-base font-bold mb-4">Remove Audio</h3>
 
