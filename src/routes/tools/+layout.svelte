@@ -141,6 +141,21 @@
 			</div>
 		</nav>
 
+		<!-- Privacy Notice -->
+		<div class="px-5 py-3 border-t border-base">
+			<div class="bg-green-50 p-3 rounded-lg border border-green-200 dark:bg-green-950/30 dark:border-green-800/50">
+				<div class="flex gap-2 items-start">
+					<svg class="flex-shrink-0 h-4 w-4 text-green-600 dark:text-green-400 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+					</svg>
+					<div>
+						<p class="text-xs font-medium text-green-800 dark:text-green-300">100% Private</p>
+						<p class="text-xs text-green-700 dark:text-green-400 mt-0.5">All processing happens locally in your browser. No uploads.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<!-- Footer -->
 		<div class="px-3 py-4 border-t border-base flex justify-end">
 			<div class="p-0.5 rounded-lg bg-surface-100 flex dark:bg-surface-800">

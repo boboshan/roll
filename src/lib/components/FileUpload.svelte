@@ -91,7 +91,7 @@
 			<Upload class={`h-8 w-8 ${isDragOver ? 'animate-bounce' : ''}`} />
 		</div>
 		<h3 class="text-lg text-base font-semibold mb-2">
-			{isDragOver ? 'Drop your video here' : 'Choose a video file'}
+			{isDragOver ? 'Drop your video here' : 'Select a video file'}
 		</h3>
 		<p class="text-sm text-muted">
 			{isDragOver ? 'Release to upload' : 'Drag & drop or click to browse'}
